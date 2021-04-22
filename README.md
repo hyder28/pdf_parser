@@ -3,8 +3,7 @@
 Extracts text content from multi-format PDFs.
 
 Algorithm
-1. Check DRM, scanned using DPI, language > 40% English. Not extracted.
-
+1. Check drm, scanned using dpi, language > 40% english. Not extracted.
 
 ## Tools
 PyMuPDF
