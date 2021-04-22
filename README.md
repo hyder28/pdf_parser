@@ -3,7 +3,7 @@
 Extracts text content from multi-format PDFs.
 
 Algorithm
-1. Check DRM, scanned using DPI, language > 40% English -> to remove
+1. Check DRM, scanned using DPI, language > 40% English. Not extracted.
 
 
 ## Tools
