@@ -12,9 +12,8 @@ Extracts textual content from multi-format PDFs.
 - **Clean extracted content:** Remove border elements by restricting content to 90% width and height on all 4 corners of a PDF page. Add page breaks in cases where the PDF page contains multiple format types (e.g. single-column and multi-column on a single page), normalize block widths and merge normalized bboxs for reading sequence sorting. Merge consecutive text paragraphs within and across pages, to a single text block.
 <img src="https://user-images.githubusercontent.com/57243765/115804662-0a102c80-a416-11eb-8318-ff52d86e264f.png" width = 1000 height = auto />
 
-- **Parent child relationship:** In-progress
-
-
+- **Parent child relationship:** Remove duplicated title and text contents across pages. Generate parent-child relationsips between title and texts with depth levels to associate respective text to its titles.
+<img src = "https://user-images.githubusercontent.com/57243765/115948087-88e09480-a4fe-11eb-9b14-c4c21c89f8f7.png" width = 1000 height = auto/>
 
 ## Main Tools
 PyMuPDF, OpenCV
