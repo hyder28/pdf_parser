@@ -14,5 +14,7 @@ Extracts textual content from multi-format PDFs.
 
 - **Parent child relationship:** In-progress
 
+
+
 ## Main Tools
 PyMuPDF, OpenCV
