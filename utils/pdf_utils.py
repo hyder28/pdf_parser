@@ -9,6 +9,7 @@ from pytesseract import image_to_pdf_or_hocr
 
 from .config import temp_folder
 
+
 def check_drm_and_language(doc, ):
     """ Get page-wise status of DRM protection.
     Args:
@@ -40,6 +41,7 @@ def check_drm_and_language(doc, ):
 
     return page_details
 
+
 def check_scanned(doc, page_details):
     scanned_count, digital_count = 0, 0
     for page in doc:
@@ -54,6 +56,7 @@ def check_scanned(doc, page_details):
     if scanned_count >= digital_count:
         return page_details, True
     return page_details, False
+
 
 def check_dpi(doc, page_details):
     gt_250 = 0
@@ -83,6 +86,7 @@ def check_dpi(doc, page_details):
     if dpi_pass_percentage > 50:
         return True, faulty_page_nos
     return False, faulty_page_nos
+
 
 def flags_decomposer(flags):
     """Make font flags human readable."""
@@ -161,13 +165,14 @@ def page_to_df(page):
     )
     return df
 
+
 def check_overlap_area(bbox, rect, threshold):
     return fitz.Rect(bbox).intersect(rect).getRectArea() > threshold * min(
         fitz.Rect(bbox).getRectArea(), rect.getRectArea()
     )
 
+
 def page_to_image(page, scale=1):
-    # temp_file = str(temp_folder / f"{uuid4()}.png")
     pixmap = page.getPixmap(matrix=fitz.Matrix(scale, scale))
     # pixmap.writeImage("temp.png")
     nparr = np.fromstring(pixmap.getPNGData(), np.uint8)
@@ -178,15 +183,16 @@ def page_to_image(page, scale=1):
     dpi = min(x_dpi, y_dpi)
     return img, dpi
 
+
 def get_scanned_page_as_df(img, dpi, scale):
     # img, dpi = self.get_page_as_image(page_num, scale)
-    temp_file = str(temp_folder / f"{uuid4()}.png")
+    temp_file = os.path.join(temp_folder, f"{uuid4()}.png")
     cv2.imwrite(temp_file, img)
     ocr_config = f"--oem 1 --psm 1 hocr_font_info=1 --dpi {dpi}"
     hocr = image_to_pdf_or_hocr(
         temp_file, lang="eng", config=ocr_config, extension="hocr"
     )
-    os.remove(temp_file)
+
     soup = BeautifulSoup(hocr, features="lxml")
     data = []
     for block_num, block in enumerate(soup.find_all("div", {"class": "ocr_carea"})):
@@ -252,6 +258,7 @@ def get_scanned_page_as_df(img, dpi, scale):
         data=data,
     )
     return df
+
 
 def create_page(doc, page):
     page_rect = page.MediaBox

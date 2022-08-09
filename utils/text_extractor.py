@@ -6,7 +6,6 @@ import fitz
 import numpy as np
 import pandas as pd
 from .pdf_utils import get_scanned_page_as_df, page_to_image, page_to_df, create_page
-from utils.config import temp_folder
 import logging
 
 
@@ -26,33 +25,6 @@ class TextExtractor:
         if ftype == "":
             ftype = "normal"
         return ftype
-
-    def __get_font_files(self, page_num):
-        try:
-            fontsList = self.doc.getPageFontList(page_num)
-            fonts = {}
-            pdf_folder = temp_folder / str(uuid4())
-            os.mkdir(pdf_folder)
-            for font in fontsList:
-                name, ext, _, buffer = self.doc.extractFont(font[0])
-                # if buffer not None:
-                if not "/" in ext:
-                    temp_file = str(pdf_folder / name) + "." + ext
-                    ofile = open(temp_file, "wb")
-                    ofile.write(buffer)
-                    ofile.close()
-                    ind = font[3].find("+")
-                    if ind != -1:
-                        fonts[font[3][ind + 1:]] = temp_file
-                    else:
-                        fonts[font[3]] = temp_file
-                else:
-                    fonts[font[3]] = None
-            return fonts
-        except Exception as e:
-            logging.error(f"> error in reading fonts for {self.file_name}, {page_num}")
-
-            return None
 
     def __get_font_name(self, font, fonts):
         for f in fonts.keys():

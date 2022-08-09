@@ -1,17 +1,21 @@
+from fastapi import FastAPI, UploadFile
 import uvicorn
+
+from utils.run_pdf_parse import get_pdf_extraction
+from utils.config import temp_folder
+
+from datetime import datetime
+from uuid import uuid4
 import logging
 import os
 
-from fastapi import FastAPI, UploadFile
-from utils.run_pdf_parse import get_pdf_extraction
-
-from datetime import datetime
-
 app = FastAPI()
+
 
 @app.get("/")
 def root() -> dict:
     return {"message": "Lets parse PDF documents!"}
+
 
 @app.get("/health")
 def check_health() -> dict:
@@ -29,11 +33,17 @@ async def extract_pdf(pdf: UploadFile) -> dict:
     logging.basicConfig(filename="parser_app.log", level=logging.DEBUG)
     logging.info(f"Started at {str(datetime.now())}")
 
-    pdf_fpath = os.path.join("./pdf_files", pdf.filename)
+    temp_pdf_file = os.path.join(temp_folder, f"{uuid4()}.pdf")
     pdf_fname = pdf.filename[:-4]
 
-    df_result = get_pdf_extraction(pdf_fpath, pdf_fname)
+    with open(temp_pdf_file, "wb") as file:
+        file.write(pdf.file.read())
+
+    df_result = get_pdf_extraction(temp_pdf_file,  pdf_fname)
     dict_result = df_result.to_dict(orient="records")
+
+    for f in os.listdir(temp_folder):
+        os.remove(os.path.join(temp_folder, f))
 
     logging.info(f"Ended at {str(datetime.now())}")
 
