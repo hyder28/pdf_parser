@@ -9,6 +9,9 @@ from datetime import datetime
 
 app = FastAPI()
 
+@app.get("/")
+def root() -> dict:
+    return {"message": "Lets parse PDF documents!"}
 
 @app.get("/health")
 def check_health() -> dict:
