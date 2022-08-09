@@ -1,11 +1,9 @@
 import uvicorn
 from fastapi import FastAPI, UploadFile
 
-from run_pdf_parse import get_pdf_extraction
+from utils.run_pdf_parse import get_pdf_extraction
 
 import os
-
-import fitz
 
 app = FastAPI()
 
