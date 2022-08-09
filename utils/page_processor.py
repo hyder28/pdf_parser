@@ -4,7 +4,7 @@ import pandas as pd
 import fitz
 from utils.text_extractor import TextExtractor
 from utils.pdf_utils import page_to_df, check_overlap_area, page_to_image, get_scanned_page_as_df
-
+import logging
 
 
 class PageProcessor:
@@ -68,7 +68,6 @@ class PageProcessor:
         df["span_num"] = None
         return df
 
-
     def remove_border_elements(self, page, data_df):
         """ Creating a border of 10 % of width and height on all 4 sides.
         """
@@ -86,9 +85,7 @@ class PageProcessor:
                                           < bottom_thresh].copy()
             return clean_data_df
         except Exception as e:
-            print(
-                f"> error in removing border elements for {self.file_name}, {page.number}")
-
+            logging.error(f"> error in removing border elements for {self.file_name}, {page.number}")
             return data_df
 
     def add_pagebreak(self, data_df):
@@ -109,7 +106,7 @@ class PageProcessor:
                 # CHECKING FOR INTERSECTIONS ALONG Y AXIS
                 newdf = data_df[
                     data_df.apply(lambda x: (
-                        x["y1"] <= y2 and x["y2"] >= y1), axis=1)
+                            x["y1"] <= y2 and x["y2"] >= y1), axis=1)
                 ]
                 if len(newdf.index) > 1:
                     data_df.loc[index, "intersection"] = 1
@@ -121,7 +118,6 @@ class PageProcessor:
                         data_df.loc[index1, "multicolumn"] = segment
                         continue
                     if row1["intersection"] != cur:
-                        # # print(row1['text'],row1['intersection'],cur)
                         segment += 1
                         cur = row1["intersection"]
                         data_df.loc[index1, "multicolumn"] = segment
@@ -130,8 +126,7 @@ class PageProcessor:
             # self.data_df=df
             return data_df
         except Exception as e:
-            print(
-                f"> error in adding pagebreaks for {self.file_name}, {self.page_num}")
+            logging.error(f"> error in adding pagebreaks for {self.file_name}, {self.page_num}")
 
             data_df.loc[index1, "multicolumn"] = 1
             return data_df
@@ -156,15 +151,14 @@ class PageProcessor:
                     (part_df["col_no"] == x)
                     & (part_df["label"] != "figure")
                     & (part_df["label"] != "table")
-                ]["cv_rect_width"].mean()
+                    ]["cv_rect_width"].mean()
                 x1, y1, x2, y2 = part_df.loc[index]["cv_rect"]
                 if not np.isnan(max_width):
                     x2 = part_df.at[index, "x1"] + max_width
                 part_df.at[index, "norm_rect"] = fitz.Rect(x1, y1, x2, y2)
             return part_df
         except Exception as e:
-            print(
-                f"> error in block normalisation for {self.file_name}, {self.page_num}")
+            logging.error(f"> error in block normalisation for {self.file_name}, {self.page_num}")
 
             return part_df
 
@@ -185,12 +179,12 @@ class PageProcessor:
                     # temp_df = groupby_styles_df[groupby_styles_df["norm_rect"].apply(
                     #     lambda rect: check_overlap_area(list(row["norm_rect"]), rect, 0.8))]
                     temp_df = groupby_styles_df[(
-                        groupby_styles_df["norm_rect"].apply(
-                            row["norm_rect"].intersects)) &
-                        (groupby_styles_df["label"] != "table") &
-                        (groupby_styles_df["label"] != "table_image") &
-                        (groupby_styles_df["label"] != "table_html")
-                    ]
+                                                    groupby_styles_df["norm_rect"].apply(
+                                                        row["norm_rect"].intersects)) &
+                                                (groupby_styles_df["label"] != "table") &
+                                                (groupby_styles_df["label"] != "table_image") &
+                                                (groupby_styles_df["label"] != "table_html")
+                                                ]
                     if len(temp_df) > 1:
                         new_row = row.copy()
                         new_row["x1"] = temp_df["x1"].min()
@@ -217,8 +211,7 @@ class PageProcessor:
             part_df.reset_index(drop=True, inplace=True)
             return part_df
         except Exception as e:
-            print(
-                f"> error in merging normalised boxes for {self.file_name}, {self.page_num}")
+            logging.error(f"> error in merging normalised boxes for {self.file_name}, {self.page_num}")
 
     def sort_in_reading_order(self, part_df):
         part_df["centroid_x"] = part_df["pdf_rect"].apply(
@@ -261,9 +254,7 @@ class PageProcessor:
             self.txt_extractor.read_pdf_to_df(pdf_path, page, is_scanned)
 
             text_df = self.txt_extractor.data_df
-
-            print(
-                f"> completed text extraction for {self.file_name}, {page.number}")
+            logging.info(f"> completed text extraction for {self.file_name}, {page.number}")
             data_df = text_df
             if self.is_scanned:
                 scale = 4
@@ -294,6 +285,4 @@ class PageProcessor:
             data_df.reset_index(inplace=True, drop=True)
             return data_df
         except Exception as e:
-            print(
-                f"> error in processing page {self.page_num} of {self.file_name}")
-
+            logging.error(f"> error in processing page {self.page_num} of {self.file_name}")

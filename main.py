@@ -1,25 +1,36 @@
 import uvicorn
-from fastapi import FastAPI, UploadFile
-
-from utils.run_pdf_parse import get_pdf_extraction
-
+import logging
 import os
+
+from fastapi import FastAPI, UploadFile
+from utils.run_pdf_parse import get_pdf_extraction
 
 app = FastAPI()
 
 
-@app.get("/health_check")
-def check_health():
+@app.get("/health")
+def check_health() -> dict:
+    """
+    Checks health
+    """
     return {"status": "OK"}
 
 
 @app.post("/extract_pdf")
-async def extract_pdf(pdf: UploadFile):
+async def extract_pdf(pdf: UploadFile) -> dict:
+    """
+    Extracts pdf to parent-child relationships
+    """
+    logging.basicConfig(filename="parser_app.log", level=logging.DEBUG)
+    logging.info("Started")
+
     pdf_fpath = os.path.join("./pdf_files", pdf.filename)
     pdf_fname = pdf.filename[:-4]
 
     df_result = get_pdf_extraction(pdf_fpath, pdf_fname)
     dict_result = df_result.to_dict(orient="records")
+
+    logging.info("Finished")
 
     return dict_result
 

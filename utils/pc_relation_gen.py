@@ -1,6 +1,5 @@
 from collections import defaultdict
-import re
-import fitz
+import logging
 
 args = {"normal": 0, "italic": 2, "bold": 3}
 style2int = defaultdict(lambda: 1, **args)
@@ -42,7 +41,7 @@ class depthCalculator:
             self.__update_parent_id(parent_id)
             return self.get_title_parent(), self.depth
         except Exception as e:
-            print(f"Error in adding parent to depth calculator for {pdf_name}")
+            logging.error(f"Error in adding parent to depth calculator for {pdf_name}")
 
     def get_parent_and_depth(self, ):
         if len(self.parent_holder) == 0:
@@ -88,16 +87,16 @@ class PCRelationGen:
             data_df.reset_index(drop=True, inplace=True)
             return data_df
         except Exception as e:
-            print(f"Cannot remove duplicate headers for {pdf_name}")
+            logging.error(f"Cannot remove duplicate headers for {pdf_name}")
             return data_df
 
     def generate_relationship(self, data_df, pdf_name):
         try:
             try:
-                data_df["text"] = data_df["text"].apply(lambda text: bytes(text.replace("\\N","").encode(
+                data_df["text"] = data_df["text"].apply(lambda text: bytes(text.replace("\\N", "").encode(
                     "ascii", "backslashreplace").decode("ascii"), "ascii").decode('unicode-escape'))
             except Exception as e:
-                print(f"Cannot remove unicode characters for {pdf_name}")
+                logging.error(f"Cannot remove unicode characters for {pdf_name}")
             data_df = self.remove_duplicates(data_df, pdf_name)
             data_df["istyle"] = data_df["style"].apply(lambda x: style2int[x])
 
@@ -133,6 +132,6 @@ class PCRelationGen:
             ]]
 
         except Exception as e:
-            print(f"Error in generating parent-child relationships for {pdf_name}")
+            logging.error(f"Error in generating parent-child relationships for {pdf_name}")
 
         return df

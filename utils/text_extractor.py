@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from .pdf_utils import get_scanned_page_as_df, page_to_image, page_to_df, create_page
 from utils.config import temp_folder
-
+import logging
 
 
 class TextExtractor:
@@ -16,7 +16,6 @@ class TextExtractor:
         self.doc = None
         self.is_scanned = is_scanned
         self.data_df = pd.DataFrame()
-
 
     def __get_font_style(self, flags):
         ftype = ""
@@ -51,8 +50,7 @@ class TextExtractor:
                     fonts[font[3]] = None
             return fonts
         except Exception as e:
-            print(
-                f"> error in reading fonts for {self.file_name}, {page_num}")
+            logging.error(f"> error in reading fonts for {self.file_name}, {page_num}")
 
             return None
 
@@ -138,8 +136,7 @@ class TextExtractor:
             )
             return df
         except Exception as e:
-            print(
-                f"> error in extracting raw text for {self.file_name}, {self.page_num}.")
+            logging.error(f"> error in extracting raw text for {self.file_name}, {self.page_num}.")
 
             return pd.DataFrame()
 
@@ -160,24 +157,20 @@ class TextExtractor:
                 overlay=True,
             )
         except Exception as e:
-            print(f"> unable to write on new page for {self.file_name}, {self.page_num}")
-
+            logging.error(f"> unable to write on new page for {self.file_name}, {self.page_num}")
 
     def get_stripped_page(self, page):
         """
         Strips the PDF page of all the Lines and Figures preserving only copyable the text.
         """
-        # page_num = page.number
+
         try:
             temp_page = create_page(self.doc, page)
-            # page = doc[page_num]
-            # fonts = self.__get_font_files(page.number)
+
             fonts = {}
-            # # print(fonts)
+
             page_df = self.get_rawpage_as_df(page)
-            # # print(page_df["font"].unique())
-            # for idx, row in page_df.iterrows():
-            #     self.__print_on_page(temp_page, fonts, row)
+
             page_df.apply(
                 lambda row: self.__print_on_page(temp_page, fonts, row),
                 axis=1,
@@ -186,9 +179,8 @@ class TextExtractor:
             # page_num = page.number
             self.doc.deletePage(self.doc.pageCount - 1)
         except Exception as e:
-            print(
-                f"> error in extracting stripped page for {self.file_name}, {self.page_num}.\nReturning original page image by default.")
-
+            logging.error(
+                "> error in extracting stripped page for {self.file_name}, {self.page_num}.\nReturning original page image by default.")
 
             img, _ = page_to_image(page, 4)
         return img
@@ -276,13 +268,10 @@ class TextExtractor:
                 raise ValueError(f"No text blocks detected.")
             return blocks_df
         except ValueError as e:
-            print(
-                f"> no text blocks detected for {self.file_name}, {self.page_num}")
-
+            logging.error(f"> no text blocks detected for {self.file_name}, {self.page_num}")
             return pd.DataFrame()
         except Exception as e:
-            print(
-                f"> error in generating block bboxes for {self.file_name}, {self.page_num}")
+            logging.error(f"> error in generating block bboxes for {self.file_name}, {self.page_num}")
 
             return pd.DataFrame()
 
@@ -307,10 +296,6 @@ class TextExtractor:
                     if len(temp_df) > 1:
                         new_row = row.copy()
                         blocks_df.at[index, "to_delete"] = 1
-                        out = temp_df["rect"].apply(
-                            new_row["rect"].includeRect)
-                        # for _, row1 in temp_df.iterrows():
-                        #     new_row["rect"].includeRect(row1["rect"])
                         new_row["label"] = temp_df["label"].values[0]
                         new_row["x1"] = new_row["rect"].x0
                         new_row["y1"] = new_row["rect"].y0
@@ -321,16 +306,13 @@ class TextExtractor:
                 data=list(new_block_data.values()), columns=blocks_columns + ["to_delete"]
             )
             blocks_df = blocks_df.append(t_df)
-            # # print(len(df))
             blocks_df.reset_index(drop=True, inplace=True)
             blocks_df.drop(
                 blocks_df[blocks_df["to_delete"] == 1].index, inplace=True)
             blocks_df.reset_index(drop=True, inplace=True)
             return blocks_df
         except Exception as e:
-            print(
-                f"> error in merging bboxes for {self.file_name}, {self.page_num}")
-
+            logging.error(f"> error in merging bboxes for {self.file_name}, {self.page_num}")
             return pd.DataFrame()
 
     def get_page_blocks_with_text(self, page):
@@ -379,7 +361,6 @@ class TextExtractor:
                                 break
                         elif not prev_row.empty:
                             txt = row["text"]
-                            # print(txt, row["style"])
                             if len(txt.split()) > 1:
                                 first = txt.split()[0]
                                 rest = " ".join(txt.split()[1:])
@@ -441,17 +422,14 @@ class TextExtractor:
                                     rect
                                 )  # If text block is repeated, merge them.
                         except Exception as e:
-                            print(
-                                "> error in generating page dataframe")
+                            logging.error("> error in generating page dataframe")
 
-                            # print(temp_df[temp_df["label"] == label])
             data_df = pd.DataFrame(
                 data=list(block_data.values()), columns=new_blocks_columns
             )
             return data_df
         except Exception as e:
-            print(
-                f"> error in generating text blocks for {self.file_name}, {self.page_num}")
+            logging.error(f"> error in generating text blocks for {self.file_name}, {self.page_num}")
 
             return pd.DataFrame()
 
@@ -460,12 +438,10 @@ class TextExtractor:
             self.is_scanned = is_scanned
             self.file_name = Path(path).name
             self.page_num = page.number
-            print(
-                f"> begin text extraction for {self.file_name}, {page.number}")
+            logging.info(f"> begin text extraction for {self.file_name}, {page.number}")
             self.doc = fitz.open(path)
             data_df = self.get_page_blocks_with_text(page)
             data_df.reset_index(drop=True, inplace=True)
             self.data_df = data_df
         except Exception as e:
-            print(
-                f"> error in extracting text from {self.file_name}, {self.page_num}")
+            logging.error(f"> error in extracting text from {self.file_name}, {self.page_num}")

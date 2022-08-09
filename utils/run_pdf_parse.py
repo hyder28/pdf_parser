@@ -1,10 +1,8 @@
-import os
 import warnings
-
-from datetime import datetime
 
 import fitz  # PyMuPDF
 import pandas as pd
+import logging
 
 from utils.pdf_utils import check_drm_and_language, check_scanned, check_dpi
 from utils.page_processor import PageProcessor
@@ -20,9 +18,9 @@ def get_pdf_extraction(pdf_fpath, pdf_fname):
     is_dpi_valid, faulty_page_nos = check_dpi(doc, page_details)
 
     if is_dpi_valid == False:
-        print(f"The pdf DPI is less than 250 for pages {faulty_page_nos} of {pdf_fname}")
+        logging.info(f"The pdf DPI is less than 250 for pages {faulty_page_nos} of {pdf_fname}")
 
-    print(f"Processing PDF...")
+    logging.info(f"Processing PDF...")
     page_proc = PageProcessor(is_scanned=is_scanned)
     pdf_data = pd.DataFrame()
     pc_relation_gen = PCRelationGen()
@@ -33,7 +31,7 @@ def get_pdf_extraction(pdf_fpath, pdf_fname):
                                                          page_details[page.number]["is_scanned"])
 
         if page_details[page.number]["drm_status"] == True or page_data is None:
-            print(f"> {page.number} is DRM Protected")
+            logging.info(f"> {page.number} is DRM Protected")
             page_data_columns = ['sx1', 'x1', 'y1', 'x2', 'y2', 'text', 'size', 'style', 'color', 'font',
                                  'block_num', 'pdf_rect', 'cv_rect', 'label', 'page_num', 'intersection',
                                  'multicolumn', 'col_no', 'quant_y', 'cv_rect_width', 'norm_rect',
@@ -48,7 +46,7 @@ def get_pdf_extraction(pdf_fpath, pdf_fname):
         pdf_data = pdf_data.append(page_data)
 
     # Create Parent - Child relationships
-    print("Creating parent-child relations...")
+    logging.info("Creating parent-child relations...")
     if pdf_data.empty:
         raise ValueError("No data extracted from pdfs")
 
