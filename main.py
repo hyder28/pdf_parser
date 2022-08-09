@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile
+from typing import Union
 import uvicorn
 
 from utils.run_pdf_parse import get_pdf_extraction
@@ -26,15 +27,26 @@ def check_health() -> dict:
 
 
 @app.post("/extract_pdf")
-async def extract_pdf(pdf: UploadFile) -> dict:
+async def extract_pdf(pdf: Union[UploadFile, None] = None) -> dict:
     """
     Extracts pdf to parent-child relationships
     """
     logging.basicConfig(filename="parser_app.log", level=logging.DEBUG)
     logging.info(f"Started at {str(datetime.now())}")
 
+    if not pdf:
+        logging.error("> error in pdf file upload")
+        return {"message": "No PDF file uploaded"}
+
+    pdf_fname = pdf.filename
+
+    if not pdf_fname.endswith(".pdf"):
+        logging.error("> error in pdf file upload")
+        return {"message": "Incorrect file uploaded"}
+    else:
+        pdf_fname = pdf_fname[:-4]
+
     temp_pdf_file = os.path.join(temp_folder, f"{uuid4()}.pdf")
-    pdf_fname = pdf.filename[:-4]
 
     with open(temp_pdf_file, "wb") as file:
         file.write(pdf.file.read())
