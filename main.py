@@ -24,7 +24,6 @@ if __name__ == "__main__":
         os.makedirs(output_fdir)
 
     pdf_files = [pdf_file for pdf_file in os.listdir(f_dir) if pdf_file.endswith(".pdf")]
-    pdf_files = pdf_files[:1]
 
     for index, pdf_file in enumerate(pdf_files):
         print(f"<<< {index}. {pdf_file} >>>")

@@ -13,7 +13,6 @@ Extracts textual content from multi-format PDFs.
 <img src="https://user-images.githubusercontent.com/57243765/115804662-0a102c80-a416-11eb-8318-ff52d86e264f.png" width = 1000 height = auto />
 
 - **Parent child relationship:** Generate parent-child relationships between title and texts with depth levels to associate respective text to its titles.
-<img src = "https://user-images.githubusercontent.com/57243765/115948087-88e09480-a4fe-11eb-9b14-c4c21c89f8f7.png" width = 1000 height = auto/>
 
 ## Main Tools
 PyMuPDF, OpenCV
