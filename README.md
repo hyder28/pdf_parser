@@ -1,5 +1,5 @@
 # PDF Parser
-**** **Updated: 22nd April, 2021** ****
+**** **Updated: 9th August, 2022** ****
 ## Overview
 Extracts textual content from multi-format PDFs.
 
