@@ -19,9 +19,9 @@ async def extract_pdf(pdf: UploadFile):
     pdf_fname = pdf.filename[:-4]
 
     df_result = get_pdf_extraction(pdf_fpath, pdf_fname)
-    json_result = df_result.to_json(orient="records")
+    dict_result = df_result.to_dict(orient="records")
 
-    return json_result
+    return dict_result
 
 
 if __name__ == "__main__":

@@ -6,7 +6,7 @@ args = {"normal": 0, "italic": 2, "bold": 3}
 style2int = defaultdict(lambda: 1, **args)
 
 
-class DepthCalculator:
+class depthCalculator:
     def __init__(self):
         self.stack = []
         self.parent_holder = {}
@@ -101,11 +101,11 @@ class PCRelationGen:
             data_df = self.remove_duplicates(data_df, pdf_name)
             data_df["istyle"] = data_df["style"].apply(lambda x: style2int[x])
 
-            data_df["Block ID"] = range(len(data_df))
-            data_df["Parent ID"] = -1
-            data_df["Depth"] = -1
+            data_df["block_id"] = range(len(data_df))
+            data_df["parent_id"] = -1
+            data_df["depth"] = -1
             data_df.reset_index(drop=True, inplace=True)
-            dc = DepthCalculator()
+            dc = depthCalculator()
             parent_id = -1
             depth = -1
             prev_table_parent_depth = [-1, -1]
@@ -119,17 +119,17 @@ class PCRelationGen:
                 elif row["label"] == "title":
                     parent_id, depth = dc.add_title(
                         row["istyle"], row["size"],
-                        row["text"].isupper(), row["Block ID"], pdf_name)
-                data_df.at[index, "Parent ID"] = parent_id
-                data_df.at[index, "Depth"] = depth
+                        row["text"].isupper(), row["block_id"], pdf_name)
+                data_df.at[index, "parent_id"] = parent_id
+                data_df.at[index, "depth"] = depth
             data_df.reset_index(inplace=True, drop=True)
             df = data_df[[
-                "Block ID",
-                "Parent ID",
-                "Depth",
+                "block_id",
+                "parent_id",
+                "depth",
                 "label",
                 "text",
-                "Page No.",
+                "page_no",
             ]]
 
         except Exception as e:

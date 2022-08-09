@@ -44,7 +44,7 @@ def get_pdf_extraction(pdf_fpath, pdf_fname):
 
             page_data = pd.DataFrame(data=[drm_protected_data], columns=page_data_columns)
 
-        page_data["Page No."] = page.number + 1
+        page_data["page_no"] = page.number + 1
         pdf_data = pdf_data.append(page_data)
 
     # Create Parent - Child relationships
@@ -82,7 +82,7 @@ def get_pdf_extraction(pdf_fpath, pdf_fname):
                     text = pdf_data.loc[prev_ind]["text"]
                     pdf_data.at[ind, "to_delete"] = True
                     pdf_data.at[prev_ind, "text"] = text + " " + row["text"]
-                    if prev_row["Page No."] == row["Page No."]:
+                    if prev_row["page_no"] == row["page_no"]:
                         x1 = min(row["x1"], prev_row["x1"])
                         y1 = min(row["y1"], prev_row["y1"])
                         x2 = max(row["x2"], prev_row["x2"])
