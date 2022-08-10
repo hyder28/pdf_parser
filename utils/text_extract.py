@@ -5,7 +5,7 @@ import cv2
 import fitz
 import numpy as np
 import pandas as pd
-from .pdf_utils import get_scanned_page_as_df, page_to_image, page_to_df, create_page
+from .pdf_process import get_scanned_page_as_df, page_to_image, page_to_df, create_page
 import logging
 
 

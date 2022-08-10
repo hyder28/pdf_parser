@@ -2,8 +2,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import fitz
-from utils.text_extractor import TextExtractor
-from utils.pdf_utils import page_to_df, check_overlap_area, page_to_image, get_scanned_page_as_df
+from .text_extract import TextExtractor
+from .pdf_process import page_to_df, check_overlap_area, page_to_image, get_scanned_page_as_df
 import logging
 
 

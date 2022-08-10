@@ -4,9 +4,9 @@ import fitz  # PyMuPDF
 import pandas as pd
 import logging
 
-from utils.pdf_utils import check_drm_and_language, check_scanned, check_dpi
-from utils.page_processor import PageProcessor
-from utils.pc_relation_gen import PCRelationGen
+from .pdf_process import check_drm_and_language, check_scanned, check_dpi
+from .page_process import PageProcessor
+from .pc_relation import PCRelationGen
 
 warnings.filterwarnings("ignore")
 

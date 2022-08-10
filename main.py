@@ -1,10 +1,7 @@
 from fastapi import FastAPI, UploadFile
 from typing import Union
 import uvicorn
-
-from utils.run_pdf_parse import get_pdf_extraction
-from utils.config import temp_folder
-
+from utils import get_pdf_extraction, temp_folder
 from datetime import datetime
 from uuid import uuid4
 import logging
