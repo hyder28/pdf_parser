@@ -48,7 +48,7 @@ async def extract_pdf(pdf: Union[UploadFile, None] = None) -> dict:
     with open(temp_pdf_file, "wb") as file:
         file.write(pdf.file.read())
 
-    df_result = get_pdf_extraction(temp_pdf_file,  pdf_fname)
+    df_result = get_pdf_extraction(temp_pdf_file, pdf_fname)
     dict_result = df_result.to_dict(orient="records")
 
     for f in os.listdir(temp_folder):
