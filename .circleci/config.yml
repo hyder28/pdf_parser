@@ -3,6 +3,8 @@ orbs:
   heroku: circleci/heroku@1.2.6
 
 workflows:
-    deploy:
+    example-workflow:
       jobs:
-        - heroku/deploy-via-git
+        - heroku/deploy-via-git:
+            force: true
+            maintenance-mode: false
