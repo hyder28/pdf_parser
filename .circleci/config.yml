@@ -1,1 +1,8 @@
-version: 1.0
+orbs:
+  heroku: circleci/heroku@1.2.6
+
+workflows:
+    example-workflow:
+      jobs:
+        - heroku/deploy-via-git:
+            app-name: floating-shelf-73310 
