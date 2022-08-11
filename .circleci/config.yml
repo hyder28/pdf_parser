@@ -3,9 +3,8 @@ orbs:
   heroku: circleci/heroku@1.2.6
 
 workflows:
-    deploy-parser:
+    deploy_parser:
       jobs:
-        - run: echo "Deploying PDF Parser"
         - heroku/deploy-via-git:
             force: true
             maintenance-mode: false
