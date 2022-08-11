@@ -1,11 +1,12 @@
 version: 2.1
 
 orbs:
-    heroku: circleci/heroku@1.2.6
+  heroku: circleci/heroku@1.2.6
 
-workflows:
-    heroku_parser_deploy:
-      jobs:
-          - heroku/deploy-via-git:
-              force: true
-              maintenance-mode: false
+jobs:
+  heroku_parser_deploy:
+    - heroku/deploy-via-git:
+        force: true
+        maintenance-mode: false
+  deploy_end:
+    - run: echo "Deployed parser"
