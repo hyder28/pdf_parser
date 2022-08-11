@@ -8,3 +8,5 @@ workflows:
         - heroku/deploy-via-git:
             force: true
             maintenance-mode: false
+        - steps:
+            run: echo "deployment complete"
