@@ -5,6 +5,7 @@ orbs:
 workflows:
     deploy-parser:
       jobs:
+        - run: echo "Deploying PDF Parser"
         - heroku/deploy-via-git:
             force: true
             maintenance-mode: false
