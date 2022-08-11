@@ -3,9 +3,17 @@ version: 2.1
 orbs:
   heroku: circleci/heroku@1.2.6
 
+jobs:
+  deploy:
+    executor: heroku/default
+    steps:
+      - checkout
+      - run:
+          command: >
+            echo "Run python unit tests"
+      - heroku/deploy-via-git
+
 workflows:
-  heroku_deploy_parser:
+  heroku_deploy:
     jobs:
-      - heroku/deploy-via-git:
-          force: true 
-          branch: main
+      - deploy
