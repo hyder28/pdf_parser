@@ -1,12 +1,15 @@
 version: 2.1
+
 orbs:
-  heroku: circleci/heroku@1.2.6
+    heroku: circleci/heroku@1.2.6
 
 workflows:
-    deploy_parser:
-      jobs:
+    heroku_parser_deploy:
+    jobs:
+        - build
         - heroku/deploy-via-git:
-            force: true
-            maintenance-mode: false
-        - steps:
-            run: echo "deployment complete"
+            requires:
+            - build # only run deploy-via-git job if the build job has completed
+            filters:
+            branches:
+                only: main # only run deploy-via-git job on main branch
