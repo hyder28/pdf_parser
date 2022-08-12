@@ -11,7 +11,7 @@ jobs:
       - run:
           name: Running app tests
           command: |
-            python test.py
+            python3 -m unittest -v test.py
       - heroku/deploy-via-git
 
 workflows:
