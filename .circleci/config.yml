@@ -9,8 +9,9 @@ jobs:
     steps:
       - checkout
       - run:
-          command: >
-            echo "Run python unit tests"
+          name: Running app tests
+          command: |
+            python3 test.py
       - heroku/deploy-via-git
 
 workflows:
